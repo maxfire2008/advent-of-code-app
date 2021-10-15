@@ -2,6 +2,7 @@ import tkinter as tk
 import tkinter.simpledialog
 import datetime
 import requests
+import json
 import os
 
 _AOC_TOKEN=None
@@ -49,7 +50,9 @@ for year_to_add in range(2015,current_time().year+int(current_time().month/12)):
 for year_to_add in range(len(year_list)):
     year_list_widget.insert(year_to_add+1,str(year_list[year_to_add]))
 print(day_list)
+year_list_selection = None
 def year_select_action(event):
+    global year_list_selection
     selection = event.widget.curselection()
     if selection:
         index = selection[0]
@@ -62,9 +65,13 @@ def year_select_action(event):
         saveall()
         sample_input.delete(1.0,tk.END)
         sample_output.delete(1.0,tk.END)
+        year_list_selection = data
+        openall()
     else:
         print("none selected")
+day_list_selection = None
 def day_select_action(event):
+    global day_list_selection
     selection = event.widget.curselection()
     if selection:
         index = selection[0]
@@ -73,6 +80,8 @@ def day_select_action(event):
         saveall()
         sample_input.delete(1.0,tk.END)
         sample_output.delete(1.0,tk.END)
+        day_list_selection = data
+        openall()
     else:
         print("none selected")
 year_list_widget.bind('<<ListboxSelect>>', year_select_action)
@@ -89,36 +98,42 @@ sample_input_label = tk.Label(sample_input_frame, text="Sample Input")
 sample_input_label.pack()
 sample_input = tk.Text(sample_input_frame,height=12,width=40)
 sample_input.pack()
-##def save_sample_input():
-##    text = sample_input.get(1.0,tk.END)
-##    print("save_sample_input")
-##sample_input_button = tk.Button(sample_input_frame, text="Save & Apply", command=save_sample_input)
-##sample_input_button.pack()
 
 sample_input_label = tk.Label(sample_input_frame, text="Sample Output")
 sample_input_label.pack()
 sample_output = tk.Text(sample_input_frame,height=12,width=40)
 sample_output.pack()
-##def save_sample_output():
-##    text = sample_output.get(1.0,tk.END)
-##    print("save_sample_output")
-##sample_output_button = tk.Button(sample_input_frame, text="Save & Apply", command=save_sample_output)
-##sample_output_button.pack()
 
-##year_list_widget.select_set(tk.END)
-##year_list_widget.event_generate("<<ListboxSelect>>")
+def openall():
+    if day_list_selection and year_list_selection:
+        problem_config_file_path=os.path.join(problems_dir(),year_list_selection,day_list_selection)
+        problem_config_file_name="_data.json"
+        if os.path.exists(os.path.join(problem_config_file_path,problem_config_file_name)):
+            with open(os.path.join(problem_config_file_path,problem_config_file_name)) as problem_config_file:
+                problem_config = json.loads(problem_config_file.read())
+            sample_input_data = problem_config["sample_input"]
+            sample_output_data = problem_config["sample_output"]
+            sample_input.delete(1.0,tk.END)
+            sample_output.delete(1.0,tk.END)
+            sample_input.insert(0.0,sample_input_data)
+            sample_output.insert(0.0,sample_output_data)
 
 def saveall():
-    print("Saving")
-    day_list_selection = day_list_widget.curselection()
-    if day_list_selection:
-        day_list_index = day_list_selection[0]
-        day_list_data = day_list_widget.get(day_list_index)
-        year_list_selection = year_list_widget.curselection()
-        if year_list_selection:
-            year_list_index = year_list_selection[0]
-            year_list_data = year_list_widget.get(year_list_index)
-            print(os.path.join(problems_dir(),year_list_data,day_list_data))
+    if day_list_selection and year_list_selection:
+        sample_input_data = sample_input.get(1.0,tk.END)
+        sample_output_data = sample_output.get(1.0,tk.END)
+        if sample_input_data.strip("\n") or sample_output_data.strip("\n"):
+            problem_config = {
+                "sample_input":sample_input_data,
+                "sample_output":sample_output_data,
+                }
+            
+            problem_config_file_path=os.path.join(problems_dir(),year_list_selection,day_list_selection)
+            problem_config_file_name="_data.json"
+            if not os.path.exists(problem_config_file_path):
+                os.makedirs(problem_config_file_path, exist_ok=True)
+            with open(os.path.join(problem_config_file_path,problem_config_file_name),"w+") as problem_config_file:
+                problem_config_file.write(json.dumps(problem_config))
 def on_closing():
     saveall()
     win.destroy()
