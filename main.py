@@ -171,7 +171,60 @@ def run_code_sample():
 ##    os.system("py ")
     
 def run_code_real_input():
-    pass
+    saveall()
+    if day_list_selection and year_list_selection:
+        problem_file_path=os.path.join(problems_dir(),year_list_selection,day_list_selection)
+        if not os.path.exists(problem_file_path):
+            os.makedirs(problem_file_path, exist_ok=True)
+        if not os.path.exists(os.path.join(problem_file_path,"problem_io.py")):
+            with open(os.path.join(problem_file_path,"problem_io.py"), "w+") as create_problem_io:
+                create_problem_io.write("import sys\nimport base64\nclass IO:\n    @property\n    def input(self):\n        return base64.b64decode(sys.argv[1].encode()).decode()\n    def output(self,output):\n        print('__AOC_CI_SYSTEM_OUTPUT_CALL:'+base64.b64encode(str(output).encode()).decode())\nio = IO()\n")
+        if not os.path.exists(os.path.join(problem_file_path,"solution.py")):
+            with open(os.path.join(problem_file_path,"solution.py"), "w+") as create_main_py:
+                create_main_py.write("from problem_io import io\n\nprint('solution.py Exists!')")
+        if not os.path.exists(os.path.join(problem_file_path,"input.txt")):
+            resp = requests.get("https://adventofcode.com/"+str(year_list_selection)+"/day/"+str(day_list_selection)+"/input",cookie={"session":aoc_token()})
+            with open(os.path.join(problem_file_path,"input.txt"), "wb+") as create_input_txt:
+                create_main_py.write(resp.content)
+        sample_input_data = sample_input.get(1.0,tk.END)
+        with open(os.path.join(problem_file_path,"input.txt"), "rb") as input_txt:
+            real_input_data = input_txt.read()
+        result = subprocess.run(
+            [
+                'py',
+                os.path.join(
+                    problem_file_path,
+                    os.path.join(problem_file_path,"solution.py")
+                ),
+                base64.b64encode(real_input_data).decode()
+            ],
+            stdout=subprocess.PIPE,
+            cwd=problem_file_path
+        )
+        try:
+            code_output = result.stdout.decode()
+        except:
+            print("Failure")
+            code_output = ''
+        code_answer = ''
+        for line in code_output.split("\n"):
+            if line.startswith("__AOC_CI_SYSTEM_OUTPUT_CALL:"):
+                try:
+                    code_answer = base64.b64decode(code_output[28:].encode()).decode()
+                except:
+                    code_answer = ''
+        print(code_output)
+        code_output_display.config(state=tk.NORMAL)
+        code_output_display.delete(1.0,tk.END)
+        code_output_display.insert(0.0,code_output)
+        code_output_display.config(state=tk.DISABLED)
+
+        code_answer_display.config(state=tk.NORMAL)
+        code_answer_display.delete(1.0,tk.END)
+        code_answer_display.insert(0.0,code_answer)
+        code_answer_display.config(state=tk.DISABLED)
+
+
 run_code_sample_button = tk.Button(code_output_frame, text="Run Code/Sample", command = run_code_sample)
 run_code_sample_button.pack()
 run_code_real_input_button = tk.Button(code_output_frame, text="Run Code/Real Input", command = run_code_real_input)
@@ -188,8 +241,14 @@ def openall():
             sample_output_data = problem_config["sample_output"]
             sample_input.delete(1.0,tk.END)
             sample_output.delete(1.0,tk.END)
-            sample_input.insert(0.0,sample_input_data)
-            sample_output.insert(0.0,sample_output_data)
+            if sample_input_data.endswith("\n"):
+                sample_input.insert(0.0,sample_input_data[:-1])
+            else:
+                sample_input.insert(0.0,sample_input_data)
+            if sample_output_data.endswith("\n"):
+                sample_output.insert(0.0,sample_output_data[:-1])
+            else:
+                sample_output.insert(0.0,sample_output_data)
 
 def saveall():
     if day_list_selection and year_list_selection:
