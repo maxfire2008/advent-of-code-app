@@ -4,6 +4,7 @@ import datetime
 import requests
 import json
 import os
+import subprocess
 
 _AOC_TOKEN=None
 
@@ -34,7 +35,8 @@ win.geometry("1000x650")
 win.resizable(0, 0)
 
 win.rowconfigure(1,weight=3)
-win.columnconfigure(1,weight=2)
+##win.columnconfigure(1,weight=1)
+##win.columnconfigure(2,weight=1)
 
 year_list_widget = tk.Listbox(win, exportselection=False)
 day_list_widget = tk.Listbox(win, exportselection=False)
@@ -104,6 +106,47 @@ sample_input_label.pack()
 sample_output = tk.Text(sample_input_frame,height=12,width=40)
 sample_output.pack()
 
+code_output_frame = tk.Frame(win)
+code_output_frame.grid(column=2,row=0,rowspan=2)
+
+code_output_label = tk.Label(code_output_frame, text="Code Output")
+code_output_label.pack()
+code_output = tk.Text(code_output_frame,height=12,width=40)
+code_output.pack()
+code_output.config(state=tk.DISABLED)
+def run_code_sample():
+    saveall()
+    problem_file_path=os.path.join(problems_dir(),year_list_selection,day_list_selection)
+    if not os.path.exists(problem_file_path):
+        os.makedirs(problem_file_path, exist_ok=True)
+    if not os.path.exists(os.path.join(problem_file_path,"problem_io.py")):
+        with open(os.path.join(problem_file_path,"problem_io.py"), "w+") as create_problem_io:
+            create_problem_io.write('import sys\nimport base64\nclass IO:\n    @property\n    def input(self):\n        return base64.b64decode(sys.argv[1].encode()).decode()\n    def output(self,output):\n        print(base64.b64encode(str(output).encode()).decode())\nio = IO()\n')
+    if not os.path.exists(os.path.join(problem_file_path,"solution.py")):
+        with open(os.path.join(problem_file_path,"solution.py"), "w+") as create_main_py:
+            create_main_py.write("from problem_io import io\n\nprint('solution.py Exists!')")
+    sample_input_data = sample_input.get(1.0,tk.END)
+    result = subprocess.run(
+        [
+            'py',
+            os.path.join(
+                problem_file_path,
+                os.path.join(problem_file_path,"solution.py")
+            ),
+            base64.b64encode(sample_input_data.encode()).decode()
+        ],
+        stdout=subprocess.PIPE,
+        cwd=problem_file_path
+    )
+##    os.system("py ")
+    
+def run_code_real_input():
+    pass
+run_code_sample_button = tk.Button(code_output_frame, text="Run Code/Sample", command = run_code_sample)
+run_code_sample_button.pack()
+run_code_real_input_button = tk.Button(code_output_frame, text="Run Code/Real Input", command = run_code_real_input)
+run_code_real_input_button.pack()
+
 def openall():
     if day_list_selection and year_list_selection:
         problem_config_file_path=os.path.join(problems_dir(),year_list_selection,day_list_selection)
@@ -134,6 +177,7 @@ def saveall():
                 os.makedirs(problem_config_file_path, exist_ok=True)
             with open(os.path.join(problem_config_file_path,problem_config_file_name),"w+") as problem_config_file:
                 problem_config_file.write(json.dumps(problem_config))
+
 def on_closing():
     saveall()
     win.destroy()
