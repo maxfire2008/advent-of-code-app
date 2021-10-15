@@ -144,6 +144,7 @@ def run_code_sample():
                 base64.b64encode(sample_input_data.encode()).decode()
             ],
             stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             cwd=problem_file_path
         )
         try:
@@ -151,14 +152,19 @@ def run_code_sample():
         except:
             print("Failure")
             code_output = ''
+        try:
+            code_output += result.stderr.decode()
+        except:
+            print("Failure")
         code_answer = ''
         for line in code_output.split("\n"):
             if line.startswith("__AOC_CI_SYSTEM_OUTPUT_CALL:"):
                 try:
-                    code_answer = base64.b64decode(code_output[28:].encode()).decode()
-                except:
+                    code_answer = base64.b64decode(line[28:].encode()).decode()
+                except Exception as e:
+                    print(e)
                     code_answer = ''
-        print(code_output)
+##        print(code_output)
         code_output_display.config(state=tk.NORMAL)
         code_output_display.delete(1.0,tk.END)
         code_output_display.insert(0.0,code_output)
@@ -182,12 +188,12 @@ def run_code_real_input():
         if not os.path.exists(os.path.join(problem_file_path,"solution.py")):
             with open(os.path.join(problem_file_path,"solution.py"), "w+") as create_main_py:
                 create_main_py.write("from problem_io import io\n\nprint('solution.py Exists!')")
-        if not os.path.exists(os.path.join(problem_file_path,"input.txt")):
-            resp = requests.get("https://adventofcode.com/"+str(year_list_selection)+"/day/"+str(day_list_selection)+"/input",cookie={"session":aoc_token()})
-            with open(os.path.join(problem_file_path,"input.txt"), "wb+") as create_input_txt:
-                create_main_py.write(resp.content)
+        if not os.path.exists(os.path.join(problem_file_path,"_input.txt")):
+            resp = requests.get("https://adventofcode.com/"+str(year_list_selection)+"/day/"+str(day_list_selection)+"/input",cookies={"session":aoc_token()})
+            with open(os.path.join(problem_file_path,"_input.txt"), "wb+") as create_input_txt:
+                create_input_txt.write(resp.content)
         sample_input_data = sample_input.get(1.0,tk.END)
-        with open(os.path.join(problem_file_path,"input.txt"), "rb") as input_txt:
+        with open(os.path.join(problem_file_path,"_input.txt"), "rb") as input_txt:
             real_input_data = input_txt.read()
         result = subprocess.run(
             [
@@ -203,17 +209,25 @@ def run_code_real_input():
         )
         try:
             code_output = result.stdout.decode()
-        except:
-            print("Failure")
+            print(code_output)
+        except Exception as e:
+            print("a")
+            print(e)
             code_output = ''
+        try:
+            code_output += result.stderr.decode()
+        except:
+            pass
         code_answer = ''
         for line in code_output.split("\n"):
             if line.startswith("__AOC_CI_SYSTEM_OUTPUT_CALL:"):
                 try:
-                    code_answer = base64.b64decode(code_output[28:].encode()).decode()
-                except:
+                    code_answer = base64.b64decode(line[28:].encode()).decode()
+                except Exception as e:
+                    print("c")
+                    print(e)
                     code_answer = ''
-        print(code_output)
+##        print(code_output)
         code_output_display.config(state=tk.NORMAL)
         code_output_display.delete(1.0,tk.END)
         code_output_display.insert(0.0,code_output)
