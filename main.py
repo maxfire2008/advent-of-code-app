@@ -5,6 +5,7 @@ import requests
 import json
 import os
 import subprocess
+import base64
 
 _AOC_TOKEN=None
 
@@ -111,33 +112,62 @@ code_output_frame.grid(column=2,row=0,rowspan=2)
 
 code_output_label = tk.Label(code_output_frame, text="Code Output")
 code_output_label.pack()
-code_output = tk.Text(code_output_frame,height=12,width=40)
-code_output.pack()
-code_output.config(state=tk.DISABLED)
+code_output_display = tk.Text(code_output_frame,height=12,width=40)
+code_output_display.pack()
+code_output_display.config(state=tk.DISABLED)
+
+code_answer_label = tk.Label(code_output_frame, text="Code Answer")
+code_answer_label.pack()
+code_answer_display = tk.Text(code_output_frame,height=12,width=40)
+code_answer_display.pack()
+code_answer_display.config(state=tk.DISABLED)
 def run_code_sample():
     saveall()
-    problem_file_path=os.path.join(problems_dir(),year_list_selection,day_list_selection)
-    if not os.path.exists(problem_file_path):
-        os.makedirs(problem_file_path, exist_ok=True)
-    if not os.path.exists(os.path.join(problem_file_path,"problem_io.py")):
-        with open(os.path.join(problem_file_path,"problem_io.py"), "w+") as create_problem_io:
-            create_problem_io.write('import sys\nimport base64\nclass IO:\n    @property\n    def input(self):\n        return base64.b64decode(sys.argv[1].encode()).decode()\n    def output(self,output):\n        print(base64.b64encode(str(output).encode()).decode())\nio = IO()\n')
-    if not os.path.exists(os.path.join(problem_file_path,"solution.py")):
-        with open(os.path.join(problem_file_path,"solution.py"), "w+") as create_main_py:
-            create_main_py.write("from problem_io import io\n\nprint('solution.py Exists!')")
-    sample_input_data = sample_input.get(1.0,tk.END)
-    result = subprocess.run(
-        [
-            'py',
-            os.path.join(
-                problem_file_path,
-                os.path.join(problem_file_path,"solution.py")
-            ),
-            base64.b64encode(sample_input_data.encode()).decode()
-        ],
-        stdout=subprocess.PIPE,
-        cwd=problem_file_path
-    )
+    if day_list_selection and year_list_selection:
+        problem_file_path=os.path.join(problems_dir(),year_list_selection,day_list_selection)
+        if not os.path.exists(problem_file_path):
+            os.makedirs(problem_file_path, exist_ok=True)
+        if not os.path.exists(os.path.join(problem_file_path,"problem_io.py")):
+            with open(os.path.join(problem_file_path,"problem_io.py"), "w+") as create_problem_io:
+                create_problem_io.write("import sys\nimport base64\nclass IO:\n    @property\n    def input(self):\n        return base64.b64decode(sys.argv[1].encode()).decode()\n    def output(self,output):\n        print('__AOC_CI_SYSTEM_OUTPUT_CALL:'+base64.b64encode(str(output).encode()).decode())\nio = IO()\n")
+        if not os.path.exists(os.path.join(problem_file_path,"solution.py")):
+            with open(os.path.join(problem_file_path,"solution.py"), "w+") as create_main_py:
+                create_main_py.write("from problem_io import io\n\nprint('solution.py Exists!')")
+        sample_input_data = sample_input.get(1.0,tk.END)
+        result = subprocess.run(
+            [
+                'py',
+                os.path.join(
+                    problem_file_path,
+                    os.path.join(problem_file_path,"solution.py")
+                ),
+                base64.b64encode(sample_input_data.encode()).decode()
+            ],
+            stdout=subprocess.PIPE,
+            cwd=problem_file_path
+        )
+        try:
+            code_output = result.stdout.decode()
+        except:
+            print("Failure")
+            code_output = ''
+        code_answer = ''
+        for line in code_output.split("\n"):
+            if line.startswith("__AOC_CI_SYSTEM_OUTPUT_CALL:"):
+                try:
+                    code_answer = base64.b64decode(code_output[28:].encode()).decode()
+                except:
+                    code_answer = ''
+        print(code_output)
+        code_output_display.config(state=tk.NORMAL)
+        code_output_display.delete(1.0,tk.END)
+        code_output_display.insert(0.0,code_output)
+        code_output_display.config(state=tk.DISABLED)
+
+        code_answer_display.config(state=tk.NORMAL)
+        code_answer_display.delete(1.0,tk.END)
+        code_answer_display.insert(0.0,code_answer)
+        code_answer_display.config(state=tk.DISABLED)
 ##    os.system("py ")
     
 def run_code_real_input():
