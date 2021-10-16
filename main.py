@@ -136,10 +136,15 @@ sample_input_label.pack()
 sample_input = tk.Text(sample_input_frame,height=12,width=40)
 sample_input.pack()
 
-sample_output_label = tk.Label(sample_input_frame, text="Sample Output")
+sample_output_label = tk.Label(sample_input_frame, text="Sample Output Part 1")
 sample_output_label.pack()
 sample_output = tk.Text(sample_input_frame,height=1,width=40)
 sample_output.pack()
+
+sample_output_part_2_label = tk.Label(sample_input_frame, text="Sample Output Part 2")
+sample_output_part_2_label.pack()
+sample_output_part_2 = tk.Text(sample_input_frame,height=1,width=40)
+sample_output_part_2.pack()
 
 code_output_frame = tk.Frame(win)
 code_output_frame.grid(column=2,row=0,rowspan=2)
@@ -150,11 +155,17 @@ code_output_sample_display = tk.Text(code_output_frame,height=12,width=40)
 code_output_sample_display.pack()
 code_output_sample_display.config(state=tk.DISABLED)
 
-code_answer_sample_label = tk.Label(code_output_frame, text="Sample Code Answer")
+code_answer_sample_label = tk.Label(code_output_frame, text="Sample Code Answer Part 1")
 code_answer_sample_label.pack()
 code_answer_sample_display = tk.Text(code_output_frame,height=1,width=40)
 code_answer_sample_display.pack()
 code_answer_sample_display.config(state=tk.DISABLED)
+
+code_answer_part_2_sample_label = tk.Label(code_output_frame, text="Sample Code Answer Part 2")
+code_answer_part_2_sample_label.pack()
+code_answer_part_2_sample_display = tk.Text(code_output_frame,height=1,width=40)
+code_answer_part_2_sample_display.pack()
+code_answer_part_2_sample_display.config(state=tk.DISABLED)
 
 def run_code_sample():
     saveall()
@@ -199,6 +210,14 @@ def run_code_sample():
                 except Exception as e:
                     print(e)
                     code_answer = ''
+        code_answer_part_2 = ''
+        for line in code_output.split("\n"):
+            if line.startswith("__AOC_CI_SYSTEM_OUTPUT_CALL_2:"):
+                try:
+                    code_answer_part_2 = base64.b64decode(line[30:].encode()).decode()
+                except Exception as e:
+                    print(e)
+                    code_answer_part_2 = ''
 ##        print(code_output)
         code_output_sample_display.config(state=tk.NORMAL)
         code_output_sample_display.delete(1.0,tk.END)
@@ -209,6 +228,11 @@ def run_code_sample():
         code_answer_sample_display.delete(1.0,tk.END)
         code_answer_sample_display.insert(0.0,code_answer)
         code_answer_sample_display.config(state=tk.DISABLED)
+
+        code_answer_part_2_sample_display.config(state=tk.NORMAL)
+        code_answer_part_2_sample_display.delete(1.0,tk.END)
+        code_answer_part_2_sample_display.insert(0.0,code_answer_part_2)
+        code_answer_part_2_sample_display.config(state=tk.DISABLED)
 ##    os.system("py ")
 
 run_code_sample_button = tk.Button(code_output_frame, text="Run Code/Sample", command = run_code_sample)
@@ -220,11 +244,17 @@ code_output_display = tk.Text(code_output_frame,height=12,width=40)
 code_output_display.pack()
 code_output_display.config(state=tk.DISABLED)
 
-code_answer_label = tk.Label(code_output_frame, text="Code Answer")
+code_answer_label = tk.Label(code_output_frame, text="Code Answer Part 1")
 code_answer_label.pack()
 code_answer_display = tk.Text(code_output_frame,height=1,width=40)
 code_answer_display.pack()
 code_answer_display.config(state=tk.DISABLED)
+
+code_answer_label_part_2 = tk.Label(code_output_frame, text="Code Answer Part 2")
+code_answer_label_part_2.pack()
+code_answer_display_part_2 = tk.Text(code_output_frame,height=1,width=40)
+code_answer_display_part_2.pack()
+code_answer_display_part_2.config(state=tk.DISABLED)
 
 def run_code_real_input():
     saveall()
@@ -234,7 +264,7 @@ def run_code_real_input():
             os.makedirs(problem_file_path, exist_ok=True)
         if not os.path.exists(os.path.join(problem_file_path,"problem_io.py")):
             with open(os.path.join(problem_file_path,"problem_io.py"), "w+") as create_problem_io:
-                create_problem_io.write("import sys\nimport base64\nclass IO:\n    @property\n    def input(self):\n        return base64.b64decode(sys.argv[1].encode()).decode()\n    def output(self,output):\n        print('__AOC_CI_SYSTEM_OUTPUT_CALL:'+base64.b64encode(str(output).encode()).decode())\nio = IO()\n")
+                create_problem_io.write('import sys\nimport base64\nclass IO:\n    @property\n    def input(self):\n        return base64.b64decode(sys.argv[1].encode()).decode()\n    def output(self,output,part=None):\n        if "2" in str(part):\n            print(\'__AOC_CI_SYSTEM_OUTPUT_CALL_2:\'+base64.b64encode(str(output).encode()).decode())\n        else:\n            print(\'__AOC_CI_SYSTEM_OUTPUT_CALL:\'+base64.b64encode(str(output).encode()).decode())\nio = IO()\n')
         if not os.path.exists(os.path.join(problem_file_path,"solution.py")):
             with open(os.path.join(problem_file_path,"solution.py"), "w+") as create_main_py:
                 create_main_py.write("from problem_io import io\n\nprint('solution.py Exists!')")
@@ -277,6 +307,14 @@ def run_code_real_input():
                     print("c")
                     print(e)
                     code_answer = ''
+        code_answer_part_2 = ''
+        for line in code_output.split("\n"):
+            if line.startswith("__AOC_CI_SYSTEM_OUTPUT_CALL_2:"):
+                try:
+                    code_answer_part_2 = base64.b64decode(line[30:].encode()).decode()
+                except Exception as e:
+                    print(e)
+                    code_answer_part_2 = ''
 ##        print(code_output)
         code_output_display.config(state=tk.NORMAL)
         code_output_display.delete(1.0,tk.END)
@@ -287,6 +325,11 @@ def run_code_real_input():
         code_answer_display.delete(1.0,tk.END)
         code_answer_display.insert(0.0,code_answer)
         code_answer_display.config(state=tk.DISABLED)
+
+        code_answer_display_part_2.config(state=tk.NORMAL)
+        code_answer_display_part_2.delete(1.0,tk.END)
+        code_answer_display_part_2.insert(0.0,code_answer_part_2)
+        code_answer_display_part_2.config(state=tk.DISABLED)
 
 run_code_real_input_button = tk.Button(code_output_frame, text="Run Code/Real Input", command = run_code_real_input)
 run_code_real_input_button.pack()
