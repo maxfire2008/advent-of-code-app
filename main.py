@@ -68,8 +68,25 @@ def year_select_action(event):
         saveall()
         sample_input.delete(1.0,tk.END)
         sample_output.delete(1.0,tk.END)
+
+        code_output_display.config(state=tk.NORMAL)
+        code_output_display.delete(1.0,tk.END)
+        code_output_display.config(state=tk.DISABLED)
+
+        code_answer_display.config(state=tk.NORMAL)
+        code_answer_display.delete(1.0,tk.END)
+        code_answer_display.config(state=tk.DISABLED)
+
+        code_output_sample_display.config(state=tk.NORMAL)
+        code_output_sample_display.delete(1.0,tk.END)
+        code_output_sample_display.config(state=tk.DISABLED)
+        
+        code_answer_sample_display.config(state=tk.NORMAL)
+        code_answer_sample_display.delete(1.0,tk.END)
+        code_answer_sample_display.config(state=tk.DISABLED)
+                
         year_list_selection = data
-        openall()
+##        openall()
     else:
         print("none selected")
 day_list_selection = None
@@ -83,6 +100,23 @@ def day_select_action(event):
         saveall()
         sample_input.delete(1.0,tk.END)
         sample_output.delete(1.0,tk.END)
+        
+        code_output_display.config(state=tk.NORMAL)
+        code_output_display.delete(1.0,tk.END)
+        code_output_display.config(state=tk.DISABLED)
+
+        code_answer_display.config(state=tk.NORMAL)
+        code_answer_display.delete(1.0,tk.END)
+        code_answer_display.config(state=tk.DISABLED)
+
+        code_output_sample_display.config(state=tk.NORMAL)
+        code_output_sample_display.delete(1.0,tk.END)
+        code_output_sample_display.config(state=tk.DISABLED)
+        
+        code_answer_sample_display.config(state=tk.NORMAL)
+        code_answer_sample_display.delete(1.0,tk.END)
+        code_answer_sample_display.config(state=tk.DISABLED)
+        
         day_list_selection = data
         openall()
     else:
@@ -102,25 +136,26 @@ sample_input_label.pack()
 sample_input = tk.Text(sample_input_frame,height=12,width=40)
 sample_input.pack()
 
-sample_input_label = tk.Label(sample_input_frame, text="Sample Output")
-sample_input_label.pack()
-sample_output = tk.Text(sample_input_frame,height=12,width=40)
+sample_output_label = tk.Label(sample_input_frame, text="Sample Output")
+sample_output_label.pack()
+sample_output = tk.Text(sample_input_frame,height=1,width=40)
 sample_output.pack()
 
 code_output_frame = tk.Frame(win)
 code_output_frame.grid(column=2,row=0,rowspan=2)
 
-code_output_label = tk.Label(code_output_frame, text="Code Output")
-code_output_label.pack()
-code_output_display = tk.Text(code_output_frame,height=12,width=40)
-code_output_display.pack()
-code_output_display.config(state=tk.DISABLED)
+code_output_sample_label = tk.Label(code_output_frame, text="Sample Code Output")
+code_output_sample_label.pack()
+code_output_sample_display = tk.Text(code_output_frame,height=12,width=40)
+code_output_sample_display.pack()
+code_output_sample_display.config(state=tk.DISABLED)
 
-code_answer_label = tk.Label(code_output_frame, text="Code Answer")
-code_answer_label.pack()
-code_answer_display = tk.Text(code_output_frame,height=12,width=40)
-code_answer_display.pack()
-code_answer_display.config(state=tk.DISABLED)
+code_answer_sample_label = tk.Label(code_output_frame, text="Sample Code Answer")
+code_answer_sample_label.pack()
+code_answer_sample_display = tk.Text(code_output_frame,height=1,width=40)
+code_answer_sample_display.pack()
+code_answer_sample_display.config(state=tk.DISABLED)
+
 def run_code_sample():
     saveall()
     if day_list_selection and year_list_selection:
@@ -165,17 +200,32 @@ def run_code_sample():
                     print(e)
                     code_answer = ''
 ##        print(code_output)
-        code_output_display.config(state=tk.NORMAL)
-        code_output_display.delete(1.0,tk.END)
-        code_output_display.insert(0.0,code_output)
-        code_output_display.config(state=tk.DISABLED)
+        code_output_sample_display.config(state=tk.NORMAL)
+        code_output_sample_display.delete(1.0,tk.END)
+        code_output_sample_display.insert(0.0,code_output)
+        code_output_sample_display.config(state=tk.DISABLED)
 
-        code_answer_display.config(state=tk.NORMAL)
-        code_answer_display.delete(1.0,tk.END)
-        code_answer_display.insert(0.0,code_answer)
-        code_answer_display.config(state=tk.DISABLED)
+        code_answer_sample_display.config(state=tk.NORMAL)
+        code_answer_sample_display.delete(1.0,tk.END)
+        code_answer_sample_display.insert(0.0,code_answer)
+        code_answer_sample_display.config(state=tk.DISABLED)
 ##    os.system("py ")
-    
+
+run_code_sample_button = tk.Button(code_output_frame, text="Run Code/Sample", command = run_code_sample)
+run_code_sample_button.pack()
+
+code_output_label = tk.Label(code_output_frame, text="Code Output")
+code_output_label.pack()
+code_output_display = tk.Text(code_output_frame,height=12,width=40)
+code_output_display.pack()
+code_output_display.config(state=tk.DISABLED)
+
+code_answer_label = tk.Label(code_output_frame, text="Code Answer")
+code_answer_label.pack()
+code_answer_display = tk.Text(code_output_frame,height=1,width=40)
+code_answer_display.pack()
+code_answer_display.config(state=tk.DISABLED)
+
 def run_code_real_input():
     saveall()
     if day_list_selection and year_list_selection:
@@ -238,9 +288,6 @@ def run_code_real_input():
         code_answer_display.insert(0.0,code_answer)
         code_answer_display.config(state=tk.DISABLED)
 
-
-run_code_sample_button = tk.Button(code_output_frame, text="Run Code/Sample", command = run_code_sample)
-run_code_sample_button.pack()
 run_code_real_input_button = tk.Button(code_output_frame, text="Run Code/Real Input", command = run_code_real_input)
 run_code_real_input_button.pack()
 
@@ -251,29 +298,80 @@ def openall():
         if os.path.exists(os.path.join(problem_config_file_path,problem_config_file_name)):
             with open(os.path.join(problem_config_file_path,problem_config_file_name)) as problem_config_file:
                 problem_config = json.loads(problem_config_file.read())
-            sample_input_data = problem_config["sample_input"]
-            sample_output_data = problem_config["sample_output"]
+            
             sample_input.delete(1.0,tk.END)
             sample_output.delete(1.0,tk.END)
-            if sample_input_data.endswith("\n"):
-                sample_input.insert(0.0,sample_input_data[:-1])
+
+            code_output_display.config(state=tk.NORMAL)
+            code_output_display.delete(1.0,tk.END)
+            code_output_display.config(state=tk.DISABLED)
+
+            code_answer_display.config(state=tk.NORMAL)
+            code_answer_display.delete(1.0,tk.END)
+            code_answer_display.config(state=tk.DISABLED)
+
+            code_output_sample_display.config(state=tk.NORMAL)
+            code_output_sample_display.delete(1.0,tk.END)
+            code_output_sample_display.config(state=tk.DISABLED)
+            
+            code_answer_sample_display.config(state=tk.NORMAL)
+            code_answer_sample_display.delete(1.0,tk.END)
+            code_answer_sample_display.config(state=tk.DISABLED)
+            if problem_config["sample_input"].endswith("\n"):
+                sample_input.insert(0.0,problem_config["sample_input"][:-1])
+            else: 
+                sample_input.insert(0.0,problem_config["sample_input"])
+                
+            if problem_config["sample_output"].endswith("\n"):
+                sample_output.insert(0.0,problem_config["sample_output"][:-1])
             else:
-                sample_input.insert(0.0,sample_input_data)
-            if sample_output_data.endswith("\n"):
-                sample_output.insert(0.0,sample_output_data[:-1])
+                sample_output.insert(0.0,problem_config["sample_output"])
+
+            code_output_display.config(state=tk.NORMAL)
+            if problem_config["real_output"].endswith("\n"):
+                code_output_display.insert(0.0,problem_config["real_output"][:-1])
             else:
-                sample_output.insert(0.0,sample_output_data)
+                code_output_display.insert(0.0,problem_config["real_output"])
+            code_output_display.config(state=tk.DISABLED)
+
+            code_answer_display.config(state=tk.NORMAL)
+            if problem_config["real_answer"].endswith("\n"):
+                code_answer_display.insert(0.0,problem_config["real_answer"][:-1])
+            else:
+                code_answer_display.insert(0.0,problem_config["real_answer"])
+            code_answer_display.config(state=tk.DISABLED)
+
+            code_output_sample_display.config(state=tk.NORMAL)
+            if problem_config["sample_output_run"].endswith("\n"):
+                code_output_sample_display.insert(0.0,problem_config["sample_output_run"][:-1])
+            else:
+                code_output_sample_display.insert(0.0,problem_config["sample_output_run"])
+            code_output_sample_display.config(state=tk.DISABLED)
+            
+            code_answer_sample_display.config(state=tk.NORMAL)
+            if problem_config["sample_answer_run"].endswith("\n"):
+                code_answer_sample_display.insert(0.0,problem_config["sample_answer_run"][:-1])
+            else:
+                code_answer_sample_display.insert(0.0,problem_config["sample_answer_run"])
+            code_answer_sample_display.config(state=tk.DISABLED)
 
 def saveall():
     if day_list_selection and year_list_selection:
         sample_input_data = sample_input.get(1.0,tk.END)
         sample_output_data = sample_output.get(1.0,tk.END)
-        if sample_input_data.strip("\n") or sample_output_data.strip("\n"):
+        real_output_data = code_output_display.get(1.0,tk.END)
+        real_answer_data = code_answer_display.get(1.0,tk.END)
+        sample_output_run_data = code_output_sample_display.get(1.0,tk.END)
+        sample_answer_run_data = code_answer_sample_display.get(1.0,tk.END)
+        if sample_input_data.strip("\n") or sample_output_data.strip("\n") or real_output_data.strip("\n") or real_answer_data.strip("\n") or sample_output_run_data.strip("\n") or sample_answer_run_data.strip("\n"):
             problem_config = {
                 "sample_input":sample_input_data,
                 "sample_output":sample_output_data,
+                "real_output":real_output_data,
+                "real_answer":real_answer_data,
+                "sample_output_run":sample_output_run_data,
+                "sample_answer_run":sample_answer_run_data,
                 }
-            
             problem_config_file_path=os.path.join(problems_dir(),year_list_selection,day_list_selection)
             problem_config_file_name="_data.json"
             if not os.path.exists(problem_config_file_path):
