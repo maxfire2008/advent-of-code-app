@@ -68,6 +68,7 @@ def year_select_action(event):
         saveall()
         sample_input.delete(1.0,tk.END)
         sample_output.delete(1.0,tk.END)
+        sample_output_part_2.delete(1.0,tk.END)
 
         code_output_display.config(state=tk.NORMAL)
         code_output_display.delete(1.0,tk.END)
@@ -108,6 +109,7 @@ def day_select_action(event):
         saveall()
         sample_input.delete(1.0,tk.END)
         sample_output.delete(1.0,tk.END)
+        sample_output_part_2.delete(1.0,tk.END)
 
         code_output_display.config(state=tk.NORMAL)
         code_output_display.delete(1.0,tk.END)
@@ -354,13 +356,35 @@ def openall():
     if day_list_selection and year_list_selection:
         problem_config_file_path=os.path.join(problems_dir(),year_list_selection,day_list_selection)
         problem_config_file_name="_data.json"
+        saved_output_file_name="_output.json"
         if os.path.exists(os.path.join(problem_config_file_path,problem_config_file_name)):
             with open(os.path.join(problem_config_file_path,problem_config_file_name)) as problem_config_file:
                 problem_config = json.loads(problem_config_file.read())
             
             sample_input.delete(1.0,tk.END)
             sample_output.delete(1.0,tk.END)
-
+            sample_output_part_2.delete(1.0,tk.END)
+            if "sample_input" in problem_config:
+                if problem_config["sample_input"].endswith("\n"):
+                    sample_input.insert(0.0,problem_config["sample_input"][:-1])
+                else: 
+                    sample_input.insert(0.0,problem_config["sample_input"])
+            if "sample_output" in problem_config:
+                if problem_config["sample_output"].endswith("\n"):
+                    sample_output.insert(0.0,problem_config["sample_output"][:-1])
+                else:
+                    sample_output.insert(0.0,problem_config["sample_output"])
+            if "sample_output_2" in problem_config:
+                if problem_config["sample_output_2"].endswith("\n"):
+                    sample_output_part_2.insert(0.0,problem_config["sample_output_2"][:-1])
+                else:
+                    sample_output_part_2.insert(0.0,problem_config["sample_output_2"])
+            
+                    
+        if os.path.exists(os.path.join(problem_config_file_path,saved_output_file_name)):
+            with open(os.path.join(problem_config_file_path,saved_output_file_name)) as saved_output_file:
+                saved_output = json.loads(saved_output_file.read())
+            
             code_output_display.config(state=tk.NORMAL)
             code_output_display.delete(1.0,tk.END)
             code_output_display.config(state=tk.DISABLED)
@@ -384,62 +408,60 @@ def openall():
             code_answer_part_2_sample_display.config(state=tk.NORMAL)
             code_answer_part_2_sample_display.delete(1.0,tk.END)
             code_answer_part_2_sample_display.config(state=tk.DISABLED)
-            if problem_config["sample_input"].endswith("\n"):
-                sample_input.insert(0.0,problem_config["sample_input"][:-1])
-            else: 
-                sample_input.insert(0.0,problem_config["sample_input"])
+            if "real_output" in saved_output:
+                code_output_display.config(state=tk.NORMAL)
+                if saved_output["real_output"].endswith("\n"):
+                    code_output_display.insert(0.0,saved_output["real_output"][:-1])
+                else:
+                    code_output_display.insert(0.0,saved_output["real_output"])
+                code_output_display.config(state=tk.DISABLED)
+
+            if "real_answer" in saved_output:
+                code_answer_display.config(state=tk.NORMAL)
+                if saved_output["real_answer"].endswith("\n"):
+                    code_answer_display.insert(0.0,saved_output["real_answer"][:-1])
+                else:
+                    code_answer_display.insert(0.0,saved_output["real_answer"])
+                code_answer_display.config(state=tk.DISABLED)
+
+            if "real_answer_2" in saved_output:
+                code_answer_display_part_2.config(state=tk.NORMAL)
+                if saved_output["real_answer_2"].endswith("\n"):
+                    code_answer_display_part_2.insert(0.0,saved_output["real_answer_2"][:-1])
+                else:
+                    code_answer_display_part_2.insert(0.0,saved_output["real_answer_2"])
+                code_answer_display_part_2.config(state=tk.DISABLED)
+
+            if "sample_output_run" in saved_output:
+                code_output_sample_display.config(state=tk.NORMAL)
+                if saved_output["sample_output_run"].endswith("\n"):
+                    code_output_sample_display.insert(0.0,saved_output["sample_output_run"][:-1])
+                else:
+                    code_output_sample_display.insert(0.0,saved_output["sample_output_run"])
+                code_output_sample_display.config(state=tk.DISABLED)
+
+            if "sample_answer_run" in saved_output:
+                code_answer_sample_display.config(state=tk.NORMAL)
+                if saved_output["sample_answer_run"].endswith("\n"):
+                    code_answer_sample_display.insert(0.0,saved_output["sample_answer_run"][:-1])
+                else:
+                    code_answer_sample_display.insert(0.0,saved_output["sample_answer_run"])
+                code_answer_sample_display.config(state=tk.DISABLED)
                 
-            if problem_config["sample_output"].endswith("\n"):
-                sample_output.insert(0.0,problem_config["sample_output"][:-1])
-            else:
-                sample_output.insert(0.0,problem_config["sample_output"])
-
-            code_output_display.config(state=tk.NORMAL)
-            if problem_config["real_output"].endswith("\n"):
-                code_output_display.insert(0.0,problem_config["real_output"][:-1])
-            else:
-                code_output_display.insert(0.0,problem_config["real_output"])
-            code_output_display.config(state=tk.DISABLED)
-
-            code_answer_display.config(state=tk.NORMAL)
-            if problem_config["real_answer"].endswith("\n"):
-                code_answer_display.insert(0.0,problem_config["real_answer"][:-1])
-            else:
-                code_answer_display.insert(0.0,problem_config["real_answer"])
-            code_answer_display.config(state=tk.DISABLED)
-
-            code_answer_display_part_2.config(state=tk.NORMAL)
-            if problem_config["real_answer"].endswith("\n"):
-                code_answer_display_part_2.insert(0.0,problem_config["real_answer_2"][:-1])
-            else:
-                code_answer_display_part_2.insert(0.0,problem_config["real_answer_2"])
-            code_answer_display_part_2.config(state=tk.DISABLED)
-
-            code_output_sample_display.config(state=tk.NORMAL)
-            if problem_config["sample_output_run"].endswith("\n"):
-                code_output_sample_display.insert(0.0,problem_config["sample_output_run"][:-1])
-            else:
-                code_output_sample_display.insert(0.0,problem_config["sample_output_run"])
-            code_output_sample_display.config(state=tk.DISABLED)
-            
-            code_answer_sample_display.config(state=tk.NORMAL)
-            if problem_config["sample_answer_run"].endswith("\n"):
-                code_answer_sample_display.insert(0.0,problem_config["sample_answer_run"][:-1])
-            else:
-                code_answer_sample_display.insert(0.0,problem_config["sample_answer_run"])
-            code_answer_sample_display.config(state=tk.DISABLED)
-
-            code_answer_part_2_sample_display.config(state=tk.NORMAL)
-            if problem_config["sample_answer_run_2"].endswith("\n"):
-                code_answer_part_2_sample_display.insert(0.0,problem_config["sample_answer_run_2"][:-1])
-            else:
-                code_answer_part_2_sample_display.insert(0.0,problem_config["sample_answer_run_2"])
-            code_answer_part_2_sample_display.config(state=tk.DISABLED)
+            if "sample_answer_run_2" in saved_output:
+                code_answer_part_2_sample_display.config(state=tk.NORMAL)
+                if saved_output["sample_answer_run_2"].endswith("\n"):
+                    code_answer_part_2_sample_display.insert(0.0,saved_output["sample_answer_run_2"][:-1])
+                else:
+                    code_answer_part_2_sample_display.insert(0.0,saved_output["sample_answer_run_2"])
+                code_answer_part_2_sample_display.config(state=tk.DISABLED)
 
 def saveall():
     if day_list_selection and year_list_selection:
         sample_input_data = sample_input.get(1.0,tk.END)
         sample_output_data = sample_output.get(1.0,tk.END)
+        sample_output_2_data = sample_output_part_2.get(1.0,tk.END)
+        
         real_output_data = code_output_display.get(1.0,tk.END)
         real_answer_data = code_answer_display.get(1.0,tk.END)
         sample_output_run_data = code_output_sample_display.get(1.0,tk.END)
@@ -450,6 +472,9 @@ def saveall():
             problem_config = {
                 "sample_input":sample_input_data,
                 "sample_output":sample_output_data,
+                "sample_output_2":sample_output_2_data,
+                }
+            saved_output = {
                 "real_output":real_output_data,
                 "real_answer":real_answer_data,
                 "sample_output_run":sample_output_run_data,
@@ -459,10 +484,13 @@ def saveall():
                 }
             problem_config_file_path=os.path.join(problems_dir(),year_list_selection,day_list_selection)
             problem_config_file_name="_data.json"
+            saved_output_file_name="_output.json"
             if not os.path.exists(problem_config_file_path):
                 os.makedirs(problem_config_file_path, exist_ok=True)
             with open(os.path.join(problem_config_file_path,problem_config_file_name),"w+") as problem_config_file:
                 problem_config_file.write(json.dumps(problem_config))
+            with open(os.path.join(problem_config_file_path,saved_output_file_name),"w+") as saved_output_file:
+                saved_output_file.write(json.dumps(saved_output))
 
 def on_closing():
     saveall()
