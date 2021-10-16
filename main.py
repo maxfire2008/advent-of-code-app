@@ -77,6 +77,10 @@ def year_select_action(event):
         code_answer_display.delete(1.0,tk.END)
         code_answer_display.config(state=tk.DISABLED)
 
+        code_answer_display_part_2.config(state=tk.NORMAL)
+        code_answer_display_part_2.delete(1.0,tk.END)
+        code_answer_display_part_2.config(state=tk.DISABLED)
+
         code_output_sample_display.config(state=tk.NORMAL)
         code_output_sample_display.delete(1.0,tk.END)
         code_output_sample_display.config(state=tk.DISABLED)
@@ -84,6 +88,10 @@ def year_select_action(event):
         code_answer_sample_display.config(state=tk.NORMAL)
         code_answer_sample_display.delete(1.0,tk.END)
         code_answer_sample_display.config(state=tk.DISABLED)
+
+        code_answer_part_2_sample_display.config(state=tk.NORMAL)
+        code_answer_part_2_sample_display.delete(1.0,tk.END)
+        code_answer_part_2_sample_display.config(state=tk.DISABLED)
                 
         year_list_selection = data
 ##        openall()
@@ -100,7 +108,7 @@ def day_select_action(event):
         saveall()
         sample_input.delete(1.0,tk.END)
         sample_output.delete(1.0,tk.END)
-        
+
         code_output_display.config(state=tk.NORMAL)
         code_output_display.delete(1.0,tk.END)
         code_output_display.config(state=tk.DISABLED)
@@ -109,6 +117,10 @@ def day_select_action(event):
         code_answer_display.delete(1.0,tk.END)
         code_answer_display.config(state=tk.DISABLED)
 
+        code_answer_display_part_2.config(state=tk.NORMAL)
+        code_answer_display_part_2.delete(1.0,tk.END)
+        code_answer_display_part_2.config(state=tk.DISABLED)
+
         code_output_sample_display.config(state=tk.NORMAL)
         code_output_sample_display.delete(1.0,tk.END)
         code_output_sample_display.config(state=tk.DISABLED)
@@ -116,6 +128,10 @@ def day_select_action(event):
         code_answer_sample_display.config(state=tk.NORMAL)
         code_answer_sample_display.delete(1.0,tk.END)
         code_answer_sample_display.config(state=tk.DISABLED)
+
+        code_answer_part_2_sample_display.config(state=tk.NORMAL)
+        code_answer_part_2_sample_display.delete(1.0,tk.END)
+        code_answer_part_2_sample_display.config(state=tk.DISABLED)
         
         day_list_selection = data
         openall()
@@ -175,7 +191,7 @@ def run_code_sample():
             os.makedirs(problem_file_path, exist_ok=True)
         if not os.path.exists(os.path.join(problem_file_path,"problem_io.py")):
             with open(os.path.join(problem_file_path,"problem_io.py"), "w+") as create_problem_io:
-                create_problem_io.write("import sys\nimport base64\nclass IO:\n    @property\n    def input(self):\n        return base64.b64decode(sys.argv[1].encode()).decode()\n    def output(self,output):\n        print('__AOC_CI_SYSTEM_OUTPUT_CALL:'+base64.b64encode(str(output).encode()).decode())\nio = IO()\n")
+                create_problem_io.write('import sys\nimport base64\nclass IO:\n    @property\n    def input(self):\n        return base64.b64decode(sys.argv[1].encode()).decode()\n    def output(self,output,part=None):\n        if "2" in str(part):\n            print(\'__AOC_CI_SYSTEM_OUTPUT_CALL_2:\'+base64.b64encode(str(output).encode()).decode())\n        else:\n            print(\'__AOC_CI_SYSTEM_OUTPUT_CALL:\'+base64.b64encode(str(output).encode()).decode())\nio = IO()\n')
         if not os.path.exists(os.path.join(problem_file_path,"solution.py")):
             with open(os.path.join(problem_file_path,"solution.py"), "w+") as create_main_py:
                 create_main_py.write("from problem_io import io\n\nprint('solution.py Exists!')")
@@ -353,6 +369,10 @@ def openall():
             code_answer_display.delete(1.0,tk.END)
             code_answer_display.config(state=tk.DISABLED)
 
+            code_answer_display_part_2.config(state=tk.NORMAL)
+            code_answer_display_part_2.delete(1.0,tk.END)
+            code_answer_display_part_2.config(state=tk.DISABLED)
+
             code_output_sample_display.config(state=tk.NORMAL)
             code_output_sample_display.delete(1.0,tk.END)
             code_output_sample_display.config(state=tk.DISABLED)
@@ -360,6 +380,10 @@ def openall():
             code_answer_sample_display.config(state=tk.NORMAL)
             code_answer_sample_display.delete(1.0,tk.END)
             code_answer_sample_display.config(state=tk.DISABLED)
+
+            code_answer_part_2_sample_display.config(state=tk.NORMAL)
+            code_answer_part_2_sample_display.delete(1.0,tk.END)
+            code_answer_part_2_sample_display.config(state=tk.DISABLED)
             if problem_config["sample_input"].endswith("\n"):
                 sample_input.insert(0.0,problem_config["sample_input"][:-1])
             else: 
@@ -384,6 +408,13 @@ def openall():
                 code_answer_display.insert(0.0,problem_config["real_answer"])
             code_answer_display.config(state=tk.DISABLED)
 
+            code_answer_display_part_2.config(state=tk.NORMAL)
+            if problem_config["real_answer"].endswith("\n"):
+                code_answer_display_part_2.insert(0.0,problem_config["real_answer_2"][:-1])
+            else:
+                code_answer_display_part_2.insert(0.0,problem_config["real_answer_2"])
+            code_answer_display_part_2.config(state=tk.DISABLED)
+
             code_output_sample_display.config(state=tk.NORMAL)
             if problem_config["sample_output_run"].endswith("\n"):
                 code_output_sample_display.insert(0.0,problem_config["sample_output_run"][:-1])
@@ -398,6 +429,13 @@ def openall():
                 code_answer_sample_display.insert(0.0,problem_config["sample_answer_run"])
             code_answer_sample_display.config(state=tk.DISABLED)
 
+            code_answer_part_2_sample_display.config(state=tk.NORMAL)
+            if problem_config["sample_answer_run_2"].endswith("\n"):
+                code_answer_part_2_sample_display.insert(0.0,problem_config["sample_answer_run_2"][:-1])
+            else:
+                code_answer_part_2_sample_display.insert(0.0,problem_config["sample_answer_run_2"])
+            code_answer_part_2_sample_display.config(state=tk.DISABLED)
+
 def saveall():
     if day_list_selection and year_list_selection:
         sample_input_data = sample_input.get(1.0,tk.END)
@@ -406,6 +444,8 @@ def saveall():
         real_answer_data = code_answer_display.get(1.0,tk.END)
         sample_output_run_data = code_output_sample_display.get(1.0,tk.END)
         sample_answer_run_data = code_answer_sample_display.get(1.0,tk.END)
+        real_answer_2_data = code_answer_display_part_2.get(1.0,tk.END)
+        sample_answer_run_2_data = code_answer_part_2_sample_display.get(1.0,tk.END)
         if sample_input_data.strip("\n") or sample_output_data.strip("\n") or real_output_data.strip("\n") or real_answer_data.strip("\n") or sample_output_run_data.strip("\n") or sample_answer_run_data.strip("\n"):
             problem_config = {
                 "sample_input":sample_input_data,
@@ -414,6 +454,8 @@ def saveall():
                 "real_answer":real_answer_data,
                 "sample_output_run":sample_output_run_data,
                 "sample_answer_run":sample_answer_run_data,
+                "real_answer_2":real_answer_2_data,
+                "sample_answer_run_2":sample_answer_run_2_data,
                 }
             problem_config_file_path=os.path.join(problems_dir(),year_list_selection,day_list_selection)
             problem_config_file_name="_data.json"
