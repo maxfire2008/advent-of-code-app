@@ -9,6 +9,7 @@ While using this app it will give you a pop-up asking you for a "Problems Direct
 > *\_input.txt
 > *\problem_io.py
 > *\_output.json
+> _tempinput.txt
 > ```
 
 ## To-do
