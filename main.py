@@ -193,11 +193,14 @@ def run_code_sample():
             os.makedirs(problem_file_path, exist_ok=True)
         if not os.path.exists(os.path.join(problem_file_path,"problem_io.py")):
             with open(os.path.join(problem_file_path,"problem_io.py"), "w+") as create_problem_io:
-                create_problem_io.write('import sys\nimport base64\nclass IO:\n    @property\n    def input(self):\n        return base64.b64decode(sys.argv[1].encode()).decode()\n    def output(self,output,part=None):\n        if "2" in str(part):\n            print(\'__AOC_CI_SYSTEM_OUTPUT_CALL_2:\'+base64.b64encode(str(output).encode()).decode())\n        else:\n            print(\'__AOC_CI_SYSTEM_OUTPUT_CALL:\'+base64.b64encode(str(output).encode()).decode())\nio = IO()\n')
+                create_problem_io.write('import sys\nimport base64\nclass IO:\n    @property\n    def input(self):\n        file_name = base64.b64decode(sys.argv[1].encode()).decode()\n        with open(file_name,"rb") as file:\n            file_content = file.read().decode()\n        return file_content\n    def output(self,output,part=None):\n        if "2" in str(part):\n            print(\'__AOC_CI_SYSTEM_OUTPUT_CALL_2:\'+base64.b64encode(str(output).encode()).decode())\n        else:\n            print(\'__AOC_CI_SYSTEM_OUTPUT_CALL:\'+base64.b64encode(str(output).encode()).decode())\nio = IO()\n')
         if not os.path.exists(os.path.join(problem_file_path,"solution.py")):
             with open(os.path.join(problem_file_path,"solution.py"), "w+") as create_main_py:
                 create_main_py.write("from problem_io import io\n\nprint('solution.py Exists!')")
-        sample_input_data = sample_input.get(1.0,tk.END)
+##        sample_input_data = sample_input.get(1.0,tk.END)
+        sample_input_data_file_name = os.path.join(problems_dir(),"_tempinput.txt")
+        with open(sample_input_data_file_name,"w+") as sample_input_data_file:
+            sample_input_data_file.write(sample_input.get(1.0,tk.END))
         result = subprocess.run(
             [
                 'py',
@@ -205,7 +208,7 @@ def run_code_sample():
                     problem_file_path,
                     os.path.join(problem_file_path,"solution.py")
                 ),
-                base64.b64encode(sample_input_data.encode()).decode()
+                base64.b64encode(sample_input_data_file_name.encode()).decode()
             ],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -282,7 +285,7 @@ def run_code_real_input():
             os.makedirs(problem_file_path, exist_ok=True)
         if not os.path.exists(os.path.join(problem_file_path,"problem_io.py")):
             with open(os.path.join(problem_file_path,"problem_io.py"), "w+") as create_problem_io:
-                create_problem_io.write('import sys\nimport base64\nclass IO:\n    @property\n    def input(self):\n        return base64.b64decode(sys.argv[1].encode()).decode()\n    def output(self,output,part=None):\n        if "2" in str(part):\n            print(\'__AOC_CI_SYSTEM_OUTPUT_CALL_2:\'+base64.b64encode(str(output).encode()).decode())\n        else:\n            print(\'__AOC_CI_SYSTEM_OUTPUT_CALL:\'+base64.b64encode(str(output).encode()).decode())\nio = IO()\n')
+                create_problem_io.write('import sys\nimport base64\nclass IO:\n    @property\n    def input(self):\n        file_name = base64.b64decode(sys.argv[1].encode()).decode()\n        with open(file_name,"rb") as file:\n            file_content = file.read().decode()\n        return file_content\n    def output(self,output,part=None):\n        if "2" in str(part):\n            print(\'__AOC_CI_SYSTEM_OUTPUT_CALL_2:\'+base64.b64encode(str(output).encode()).decode())\n        else:\n            print(\'__AOC_CI_SYSTEM_OUTPUT_CALL:\'+base64.b64encode(str(output).encode()).decode())\nio = IO()\n')
         if not os.path.exists(os.path.join(problem_file_path,"solution.py")):
             with open(os.path.join(problem_file_path,"solution.py"), "w+") as create_main_py:
                 create_main_py.write("from problem_io import io\n\nprint('solution.py Exists!')")
@@ -290,9 +293,9 @@ def run_code_real_input():
             resp = requests.get("https://adventofcode.com/"+str(year_list_selection)+"/day/"+str(day_list_selection)+"/input",cookies={"session":aoc_token()})
             with open(os.path.join(problem_file_path,"_input.txt"), "wb+") as create_input_txt:
                 create_input_txt.write(resp.content)
-        sample_input_data = sample_input.get(1.0,tk.END)
-        with open(os.path.join(problem_file_path,"_input.txt"), "rb") as input_txt:
-            real_input_data = input_txt.read()
+##        sample_input_data = sample_input.get(1.0,tk.END)
+##        with open(os.path.join(problem_file_path,"_input.txt"), "rb") as input_txt:
+##            real_input_data = input_txt.read()
         result = subprocess.run(
             [
                 'py',
@@ -300,14 +303,14 @@ def run_code_real_input():
                     problem_file_path,
                     os.path.join(problem_file_path,"solution.py")
                 ),
-                base64.b64encode(real_input_data).decode()
+                base64.b64encode(os.path.join(problem_file_path,"_input.txt").encode()).decode()
             ],
             stdout=subprocess.PIPE,
             cwd=problem_file_path
         )
         try:
             code_output = result.stdout.decode()
-            print(code_output)
+##            print(code_output)
         except Exception as e:
             print("a")
             print(e)
