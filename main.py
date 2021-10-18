@@ -27,6 +27,9 @@ def problems_dir():
         _PROBLEMS_DIR = tkinter.simpledialog.askstring("Problems Directory","Problems Directory")
         return _PROBLEMS_DIR
 
+aoc_token()
+problems_dir()
+
 def current_time():
     return datetime.datetime.utcnow()-datetime.timedelta(hours=5)#+datetime.timedelta(days=50)
 
