@@ -28,7 +28,7 @@ def problems_dir():
         return _PROBLEMS_DIR
 
 def current_time():
-    return datetime.datetime.utcnow()-datetime.timedelta(hours=5)#+datetime.timedelta(days=50)
+    return datetime.datetime.utcnow()-datetime.timedelta(hours=5)#+datetime.timedelta(days=44,hours=2,minutes=52,seconds=30)
 
 win = tk.Tk()
 win.title("AoC CI")
@@ -52,7 +52,7 @@ for year_to_add in range(2015,current_time().year+int(current_time().month/12)):
         day_list[year_to_add].append(day+1)
 for year_to_add in range(len(year_list)):
     year_list_widget.insert(year_to_add+1,str(year_list[year_to_add]))
-print(day_list)
+
 year_list_selection = None
 def year_select_action(event):
     global year_list_selection
@@ -145,6 +145,49 @@ day_list_widget.bind('<<ListboxSelect>>', day_select_action)
 
 year_list_widget.grid(column=0,row=0)
 day_list_widget.grid(column=0,row=1,stick="nesw")
+
+def refresh_year_list():
+    global year_list
+    global day_list
+    year_list = []
+    day_list = {}
+
+    year_list_widget.delete(0, tk.END)
+    day_list_widget.delete(0, tk.END)
+    for year_to_add in range(2015,current_time().year+int(current_time().month/12)):
+        year_list.append(year_to_add)
+        day_list[year_to_add] = []
+        for day in range(max(25*int(current_time().year>year_to_add),current_time().day*int(current_time().month/12))):
+            day_list[year_to_add].append(day+1)
+    for year_to_add in range(len(year_list)):
+        year_list_widget.insert(year_to_add+1,str(year_list[year_to_add]))
+    
+refresh_year_list_button = tk.Button(win, text="Refresh Year List", command = refresh_year_list)
+refresh_year_list_button.grid(column=0,row=2)
+
+def refresh_day_list():
+    global year_list
+    global day_list
+    year_list = []
+    day_list = {}
+
+    for year_to_add in range(2015,current_time().year+int(current_time().month/12)):
+        year_list.append(year_to_add)
+        day_list[year_to_add] = []
+        for day in range(max(25*int(current_time().year>year_to_add),current_time().day*int(current_time().month/12))):
+            day_list[year_to_add].append(day+1)
+    selection = year_list_widget.curselection()
+    if selection:
+        index = selection[0]
+        data = year_list_widget.get(index)
+        day_list_widget.delete(0,tk.END)
+        for day in range(len(day_list[int(data)])):
+            day_list_widget.insert(day,str(day_list[int(data)][day]))
+    else:
+        refresh_year_list()
+    
+refresh_day_list_button = tk.Button(win, text="Refresh Day List", command = refresh_day_list)
+refresh_day_list_button.grid(column=0,row=3)
 
 sample_input_frame = tk.Frame(win)
 sample_input_frame.grid(column=1,row=0,rowspan=2)
